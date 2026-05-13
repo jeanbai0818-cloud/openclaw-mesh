@@ -127,8 +127,8 @@ export default {
 输出：
 ```json
 [
-  { "hostname": "baijing", "ip": "100.64.0.10", "url": "http://100.64.0.10:18789/", "online": true, "agents": ["main", "402950"] },
-  { "hostname": "openclaw-test-2", "ip": "100.64.0.7", "url": "http://100.64.0.7:18789/", "online": true, "agents": ["main"] }
+  { "hostname": "baijing", "ip": "<tailscale-ip>", "url": "http://<tailscale-ip>:18789/", "online": true, "agents": ["main", "402950"] },
+  { "hostname": "openclaw-test-2", "ip": "<tailscale-ip>", "url": "http://<tailscale-ip>:18789/", "online": true, "agents": ["main"] }
 ]
 ```
 
