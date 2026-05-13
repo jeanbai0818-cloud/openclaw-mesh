@@ -103,7 +103,7 @@ export default {
           },
           "peers": {                                // Phase 2 手动配，Phase 3 可省略
             "baijing": {
-              "url": "http://100.64.0.10:18789/",
+              "url": "http://<peer-tailscale-ip>:18789/",
               "token": "ref:env:PEER_BAIJING_TOKEN"
             }
           }
@@ -180,17 +180,17 @@ git push github main   # GitHub（公开）
 ```
 
 ### 测试节点
-当前 tailnet 在线节点（开发期参考）：
+当前 tailnet 在线节点（开发期参考，IP 见 `tailscale status`）：
 ```
-100.64.0.10  baijing          macOS  本机
-100.64.0.8   1c371da7583c     linux  在线
-100.64.0.6   ai-driven-org    linux  在线
-100.64.0.7   openclaw-test-2  linux  在线
+<ip-A>  baijing          macOS  本机
+<ip-B>  1c371da7583c     linux  在线
+<ip-C>  ai-driven-org    linux  在线
+<ip-D>  openclaw-test-2  linux  在线
 ```
 gateway call 参考命令：
 ```bash
 openclaw gateway call \
-  --url http://100.64.0.7:18789/ \
+  --url http://<peer-tailscale-ip>:18789/ \
   --token "<token>" \
   --timeout 300000 \
   --expect-final \

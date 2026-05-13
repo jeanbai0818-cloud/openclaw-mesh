@@ -13,7 +13,7 @@ function resolveTailscaleBin(): string {
 }
 
 function parseIntervalMs(s: string): number {
-  const match = /^(\d+)(ms|m|s)?$/.exec(s);
+  const match = s.match(/^(\d+)(ms|m|s)?$/);
   if (!match) return 60_000;
   const n = parseInt(match[1], 10);
   const unit = match[2] ?? "ms";

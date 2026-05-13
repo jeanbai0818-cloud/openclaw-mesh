@@ -18,8 +18,8 @@ tailscale status → 发现在线节点 → 握手取 token → gateway call 发
 
 ```json
 [
-  { "hostname": "baijing", "ip": "100.64.0.10", "url": "http://100.64.0.10:18789/", "online": true },
-  { "hostname": "openclaw-test-2", "ip": "100.64.0.7", "url": "http://100.64.0.7:18789/", "online": true }
+  { "hostname": "baijing", "ip": "<tailscale-ip>", "url": "http://<tailscale-ip>:18789/", "online": true },
+  { "hostname": "openclaw-test-2", "ip": "<tailscale-ip>", "url": "http://<tailscale-ip>:18789/", "online": true }
 ]
 ```
 
@@ -61,7 +61,7 @@ openclaw plugins install clawhub:openclaw-mesh
       },
       "peers": {
         "baijing": {
-          "url": "http://100.64.0.10:18789/",
+          "url": "http://<tailscale-ip>:18789/",
           "token": "ref:env:PEER_BAIJING_TOKEN"
         }
       }
