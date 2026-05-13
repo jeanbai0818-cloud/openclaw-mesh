@@ -111,7 +111,7 @@ export function registerMeshHttpRoutes(
       }
 
       const allowAgents = meshConfig.allowAgents;
-      if (allowAgents && allowAgents.length > 0 && !allowAgents.includes(body.agentId)) {
+      if (!allowAgents || allowAgents.length === 0 || !allowAgents.includes(body.agentId)) {
         sendJson(res, 403, { error: `agent not in allowlist: ${body.agentId}` });
         return;
       }

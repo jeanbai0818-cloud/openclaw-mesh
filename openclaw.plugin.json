@@ -5,6 +5,13 @@
   "contracts": {
     "tools": ["mesh_peers", "mesh_send"]
   },
+  "prerequisites": {
+    "binaries": ["tailscale", "openclaw"],
+    "envVars": [
+      { "name": "MESH_SECRET", "description": "Shared HMAC secret; all mesh nodes must use the same value" },
+      { "name": "MESH_GATEWAY_TOKEN", "description": "Local gateway auth token used for mesh proxy calls (least-privilege recommended)" }
+    ]
+  },
   "configSchema": {
     "type": "object",
     "additionalProperties": false,
@@ -12,6 +19,11 @@
       "sharedSecret": { "type": "string" },
       "meshToken": { "type": "string" },
       "port": { "type": "integer", "default": 18789 },
+      "allowAgents": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Required. Agent IDs that remote peers are allowed to message. Empty or missing = deny all."
+      },
       "discovery": {
         "type": "object",
         "properties": {
