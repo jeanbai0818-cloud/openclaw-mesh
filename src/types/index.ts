@@ -19,6 +19,7 @@ export interface MeshConfig {
   sharedSecret?: string;
   meshToken?: string;
   port?: number;
+  allowAgents?: string[];
   discovery?: { interval?: string; probe?: boolean };
   peers?: Record<string, { url: string; token: string }>;
 }
@@ -56,6 +57,7 @@ export const meshConfigSchema: OpenClawPluginConfigSchema = {
       sharedSecret: { type: "string" },
       meshToken: { type: "string" },
       port: { type: "integer" },
+      allowAgents: { type: "array", items: { type: "string" } },
       discovery: {
         type: "object",
         properties: {

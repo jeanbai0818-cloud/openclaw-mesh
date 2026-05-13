@@ -52,7 +52,9 @@ openclaw plugins install clawhub:openclaw-mesh
     "enabled": true,
     "config": {
       "sharedSecret": "ref:env:MESH_SECRET",
+      "meshToken": "ref:env:MESH_GATEWAY_TOKEN",
       "port": 18789,
+      "allowAgents": ["main"],
       "discovery": {
         "interval": "60s",
         "probe": true
@@ -71,6 +73,8 @@ openclaw plugins install clawhub:openclaw-mesh
 | 字段 | 说明 |
 |------|------|
 | `sharedSecret` | 组织内所有节点共用同一个密钥，建议通过环境变量注入 |
+| `meshToken` | **必填（握手模式）**。本机 gateway 的认证令牌，用于响应远端 peer 发来的消息。对应 `openclaw gateway call --token` 的值，建议用最小权限 token 并通过 `ref:env:` 注入，不要硬编码 |
+| `allowAgents` | 可选白名单，限制远端 peer 只能向指定 agentId 发消息。不配置时不限制。推荐至少填 `["main"]` |
 | `port` | 对方 gateway 端口，默认 `18789` |
 | `discovery.interval` | 节点发现刷新间隔 |
 | `discovery.probe` | 是否主动探测 `/health` 确认节点在线 |
@@ -86,6 +90,6 @@ openclaw plugins install clawhub:openclaw-mesh
 
 **关于 HTTP vs HTTPS**：peer 配置中使用 `http://100.64.x.x:18789/` 格式的 Tailscale IP 地址。虽然 URL scheme 为 HTTP，但 Tailscale 使用 WireGuard 在网络层对所有 tailnet 流量进行端到端加密，传输本身是安全的。若 gateway 开启了 `tailscale.mode = serve`，也可使用 HTTPS URL。**请勿将 peer URL 指向非 tailnet 地址。**
 
-**关于 token 范围**：握手协议（`/mesh/hello`）返回的是一次性 session token，不是 gateway 主令牌。session token 有服务端过期控制，对方节点凭此 token 调用本节点的 `/mesh/send` 代理端点，gateway 主令牌始终不离开本机。
+**关于 token 范围**：握手协议（`/mesh/hello`）返回的是随机 session token，不是 gateway 主令牌。session token 在服务端跟踪，有效期 1 小时，期间可重复使用；到期后自动失效。对方节点凭此 token 调用本节点的 `/mesh/send` 代理端点，gateway 主令牌始终不离开本机。
 
 **使用前提**：仅在可信的私有 Tailscale tailnet 内使用，不要将 `/mesh/hello` 或 `/mesh/send` 端点暴露到公网。
