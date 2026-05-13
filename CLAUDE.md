@@ -172,6 +172,13 @@ npm run deploy       # openclaw plugins install .
 ```
 构建产物在 `dist/`，`tsconfig.build.json` 的 `outDir` 指向它。
 
+### 推送
+每次提交后必须同时推两个 remote：
+```bash
+git push origin main   # GitLab（内网）
+git push github main   # GitHub（公开）
+```
+
 ### 测试节点
 当前 tailnet 在线节点（开发期参考）：
 ```
