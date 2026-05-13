@@ -81,3 +81,11 @@ openclaw plugins install clawhub:openclaw-mesh
 - OpenClaw >= 2026.5.0
 - Tailscale 已安装并加入同一 tailnet
 - 各节点 gateway 开启 `gateway.tailscale.mode = serve`
+
+## 安全说明
+
+**关于 HTTP vs HTTPS**：peer 配置中使用 `http://100.64.x.x:18789/` 格式的 Tailscale IP 地址。虽然 URL scheme 为 HTTP，但 Tailscale 使用 WireGuard 在网络层对所有 tailnet 流量进行端到端加密，传输本身是安全的。若 gateway 开启了 `tailscale.mode = serve`，也可使用 HTTPS URL。**请勿将 peer URL 指向非 tailnet 地址。**
+
+**关于 token 范围**：握手协议（`/mesh/hello`）返回的是一次性 session token，不是 gateway 主令牌。session token 有服务端过期控制，对方节点凭此 token 调用本节点的 `/mesh/send` 代理端点，gateway 主令牌始终不离开本机。
+
+**使用前提**：仅在可信的私有 Tailscale tailnet 内使用，不要将 `/mesh/hello` 或 `/mesh/send` 端点暴露到公网。

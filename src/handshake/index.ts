@@ -1,6 +1,12 @@
-import { createHmac, timingSafeEqual } from "node:crypto";
+import { createHmac, timingSafeEqual, randomUUID } from "node:crypto";
 import type { HandshakeBody, HandshakeResponse, Result } from "../types/index.js";
 import { ok, err } from "../types/index.js";
+
+interface Session {
+  nodeId: string;
+  meshToken: string;
+  expiresAt: number;
+}
 
 function generateHmac(sharedSecret: string, nodeId: string, timestamp: number): string {
   return createHmac("sha256", sharedSecret)
@@ -23,7 +29,8 @@ function isTimestampValid(timestamp: number): boolean {
 
 export interface HandshakeManager {
   verifyIncoming(body: HandshakeBody, sharedSecret: string): boolean;
-  issueToken(meshToken: string): HandshakeResponse;
+  issueToken(meshToken: string, nodeId: string): HandshakeResponse;
+  lookupSession(sessionToken: string): { nodeId: string; meshToken: string } | null;
   performHandshake(
     targetUrl: string,
     selfNodeId: string,
@@ -32,17 +39,29 @@ export interface HandshakeManager {
 }
 
 export function createHandshakeManager(): HandshakeManager {
+  const sessions = new Map<string, Session>();
+
   return {
     verifyIncoming(body, sharedSecret) {
       if (!isTimestampValid(body.timestamp)) return false;
       return verifyHmac(sharedSecret, body.nodeId, body.timestamp, body.hmac);
     },
 
-    issueToken(meshToken) {
-      return {
-        sessionToken: meshToken,
-        expiresAt: Date.now() + 3_600_000,
-      };
+    issueToken(meshToken, nodeId) {
+      const sessionToken = randomUUID();
+      const expiresAt = Date.now() + 3_600_000;
+      sessions.set(sessionToken, { nodeId, meshToken, expiresAt });
+      return { sessionToken, expiresAt };
+    },
+
+    lookupSession(sessionToken) {
+      const s = sessions.get(sessionToken);
+      if (!s) return null;
+      if (s.expiresAt <= Date.now()) {
+        sessions.delete(sessionToken);
+        return null;
+      }
+      return { nodeId: s.nodeId, meshToken: s.meshToken };
     },
 
     async performHandshake(targetUrl, selfNodeId, sharedSecret) {

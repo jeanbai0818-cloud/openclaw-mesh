@@ -160,7 +160,7 @@ export default {
 
 ### openclaw 插件规范
 - `openclaw.plugin.json` 里必须声明 `contracts.tools`，否则工具注册会被 gateway 拦截（doctor 里 `plugin must declare contracts.tools` 就是这个错）
-- HTTP 路由注册必须带 `auth` 字段，`/mesh/hello` 用 `auth: "none"`（握手端点本身验签）
+- HTTP 路由注册必须带 `auth` 字段，合法值为 `"gateway"` 或 `"plugin"`（SDK 不支持 `"none"`）；`/mesh/hello` 和 `/mesh/send` 用 `auth: "plugin"`，端点内部自行验签/校验 session token
 - 配置引用用 `ref:env:XXX` 形式，不硬编码 token / secret
 - `register()` 不能是 async，需要的 async 初始化放进 `startDiscovery()` 等后台函数
 

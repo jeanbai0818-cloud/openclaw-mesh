@@ -39,6 +39,7 @@ export interface MeshSendBody {
   agentId: string;
   message: string;
   sessionKey?: string;
+  timeoutMs?: number;
 }
 
 export const meshConfigSchema: OpenClawPluginConfigSchema = {

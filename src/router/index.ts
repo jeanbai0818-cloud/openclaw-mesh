@@ -3,7 +3,7 @@ import { promisify } from "node:util";
 import { hostname as getHostname } from "node:os";
 import { randomUUID } from "node:crypto";
 import type { PluginLogger } from "openclaw/plugin-sdk/plugin-entry";
-import type { MeshConfig, Peer, Result } from "../types/index.js";
+import type { MeshConfig, MeshSendBody, Peer, Result } from "../types/index.js";
 import { ok, err } from "../types/index.js";
 import type { PeerStore } from "../store/index.js";
 import type { HandshakeManager } from "../handshake/index.js";
@@ -77,6 +77,39 @@ async function callGateway(
   }
 }
 
+async function callMeshSend(
+  url: string,
+  sessionToken: string,
+  params: SendParams,
+  logger: PluginLogger,
+): Promise<Result<string>> {
+  const body: MeshSendBody = {
+    sessionToken,
+    agentId: params.agentId,
+    message: params.message,
+    timeoutMs: params.timeoutMs,
+    ...(params.sessionKey ? { sessionKey: params.sessionKey } : {}),
+  };
+
+  try {
+    const res = await fetch(`${url}mesh/send`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout((params.timeoutMs ?? 30_000) + 5_000),
+    });
+    if (!res.ok) {
+      return err(`mesh/send failed: HTTP ${res.status}`);
+    }
+    const data = (await res.json()) as { reply: string };
+    return ok(data.reply ?? "");
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    logger.warn(`[mesh] mesh/send to ${url} failed: ${msg}`);
+    return err(`mesh/send failed: ${msg}`);
+  }
+}
+
 function isSessionValid(peer: Peer): boolean {
   return (
     typeof peer.sessionToken === "string" &&
@@ -117,7 +150,7 @@ export function createRouter(
         if (expiresAt < Date.now() + 120_000 && handshakeManager && meshConfig.sharedSecret) {
           void renewSession(peer.hostname, peer.url, selfNodeId, meshConfig.sharedSecret, store, handshakeManager, logger);
         }
-        return callGateway(peer.url, token, params, logger);
+        return callMeshSend(peer.url, token, params, logger);
       }
 
       if (handshakeManager && meshConfig.sharedSecret) {
@@ -131,7 +164,7 @@ export function createRouter(
         }
         const { sessionToken, expiresAt } = handshakeResult.value;
         store.setSessionToken(peer.hostname, sessionToken, expiresAt);
-        return callGateway(peer.url, sessionToken, params, logger);
+        return callMeshSend(peer.url, sessionToken, params, logger);
       }
 
       return err(`no credential available for peer: ${peer.hostname}`);
