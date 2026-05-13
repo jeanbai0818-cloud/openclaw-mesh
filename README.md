@@ -92,4 +92,8 @@ openclaw plugins install clawhub:openclaw-mesh
 
 **关于 token 范围**：握手协议（`/mesh/hello`）返回的是随机 session token，不是 gateway 主令牌。session token 在服务端跟踪，有效期 1 小时，期间可重复使用；到期后自动失效。对方节点凭此 token 调用本节点的 `/mesh/send` 代理端点，gateway 主令牌始终不离开本机。
 
+**关于 allowAgents**：强烈建议配置 `allowAgents`。不配置时不做限制，任何完成握手的 peer 均可向本机任意 agent 发消息。如果本机 agent 具有高权限工具（文件系统、代码执行等），务必通过 `allowAgents` 限制可访问的 agent 范围，例如 `["main"]`。
+
+**关于 peer 身份验证**：握手协议基于共享密钥（`sharedSecret`）+ HMAC 验证，peer 的 `nodeId` 由对方自我声明，本机不做额外校验。安全边界依赖 Tailscale 网络层访问控制——只有能到达本机 `/mesh/hello` 端点的节点才能发起握手。建议在 Tailscale ACL 中明确限制哪些节点可以访问本机的 gateway 端口。
+
 **使用前提**：仅在可信的私有 Tailscale tailnet 内使用，不要将 `/mesh/hello` 或 `/mesh/send` 端点暴露到公网。

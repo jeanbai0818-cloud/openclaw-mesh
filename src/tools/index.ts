@@ -24,7 +24,7 @@ export function registerMeshTools(
     description: "List currently known openclaw nodes in the Tailscale tailnet",
     parameters: Type.Object({}),
     execute: async (_toolCallId, _params) => {
-      const peers = store.list();
+      const peers = store.list().map(({ sessionToken: _st, sessionExpiresAt: _se, ...safe }) => safe);
       return {
         content: [{ type: "text" as const, text: JSON.stringify(peers, null, 2) }],
         details: { peers },

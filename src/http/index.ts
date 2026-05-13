@@ -143,8 +143,8 @@ export function registerMeshHttpRoutes(
         });
         sendJson(res, 200, { reply: extractReply(stdout) });
       } catch (e) {
-        const msg = e instanceof Error ? e.message : String(e);
-        sendJson(res, 502, { error: `gateway call failed: ${msg}` });
+        const exitCode = (e as { code?: number }).code;
+        sendJson(res, 502, { error: `gateway call failed (exit ${exitCode ?? "unknown"})` });
       }
     },
   });
