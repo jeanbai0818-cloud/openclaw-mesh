@@ -1,0 +1,43 @@
+{
+  "id": "openclaw-mesh",
+  "name": "OpenClaw Mesh",
+  "description": "Tailscale tailnet 内多 gateway 互联，agent 跨节点发消息",
+  "contracts": {
+    "tools": [
+      {
+        "name": "mesh_peers",
+        "description": "列出当前 tailnet 内在线的 openclaw 节点"
+      },
+      {
+        "name": "mesh_send",
+        "description": "向指定节点的 agent 发送消息并等待回复"
+      }
+    ]
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "sharedSecret": { "type": "string" },
+      "port": { "type": "integer", "default": 18789 },
+      "discovery": {
+        "type": "object",
+        "properties": {
+          "interval": { "type": "string", "default": "60s" },
+          "probe": { "type": "boolean", "default": true }
+        }
+      },
+      "peers": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "url": { "type": "string" },
+            "token": { "type": "string" }
+          },
+          "required": ["url", "token"]
+        }
+      }
+    }
+  }
+}

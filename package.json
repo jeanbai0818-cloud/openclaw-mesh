@@ -1,0 +1,33 @@
+{
+  "name": "openclaw-mesh",
+  "version": "0.1.0",
+  "description": "Tailscale-based multi-gateway mesh communication for OpenClaw",
+  "type": "module",
+  "main": "./index.ts",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsc -p tsconfig.build.json --watch",
+    "deploy": "openclaw plugins install .",
+    "validate": "tsc --noEmit"
+  },
+  "files": [
+    "dist",
+    "openclaw.plugin.json",
+    "package.json"
+  ],
+  "peerDependencies": {
+    "openclaw": ">=2026.5.0"
+  },
+  "devDependencies": {
+    "openclaw": "latest",
+    "typescript": "^5.9.3"
+  },
+  "openclaw": {
+    "extensions": [
+      "./index.ts"
+    ]
+  }
+}
