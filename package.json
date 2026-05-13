@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "description": "Tailscale-based multi-gateway mesh communication for OpenClaw",
   "type": "module",
-  "main": "./index.ts",
+  "main": "./dist/index.js",
   "exports": {
-    ".": "./index.ts"
+    ".": "./dist/index.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
@@ -23,11 +23,13 @@
   },
   "devDependencies": {
     "openclaw": "latest",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "typebox": "^1.1.37",
+    "@types/node": "^22"
   },
   "openclaw": {
     "extensions": [
-      "./index.ts"
+      "./dist/index.js"
     ]
   }
 }
