@@ -1,6 +1,6 @@
 {
   "name": "openclaw-mesh",
-  "version": "2026.5.14-6",
+  "version": "2026.5.14-7",
   "description": "Tailscale-based multi-gateway mesh communication for OpenClaw",
   "type": "module",
   "main": "./dist/index.js",
@@ -24,8 +24,7 @@
   "devDependencies": {
     "openclaw": "2026.5.7",
     "typescript": "^5.9.3",
-    "typebox": "^1.1.37",
-    "@types/node": "^22"
+"@types/node": "^22"
   },
   "openclaw": {
     "extensions": [
