@@ -71,9 +71,9 @@ async function callGateway(
     });
     return ok(extractReply(stdout));
   } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
-    logger.warn(`[mesh] gateway call to ${url} failed: ${msg}`);
-    return err(`gateway call failed: ${msg}`);
+    const exitCode = (e as { code?: number }).code;
+    logger.warn(`[mesh] gateway call to ${url} failed (exit ${exitCode ?? "unknown"})`);
+    return err(`gateway call failed (exit ${exitCode ?? "unknown"})`);
   }
 }
 
