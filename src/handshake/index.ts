@@ -28,13 +28,13 @@ function isTimestampValid(timestamp: number): boolean {
 }
 
 export interface HandshakeManager {
-  verifyIncoming(body: HandshakeBody, sharedSecret: string): boolean;
+  verifyIncoming(body: HandshakeBody, sharedSecret?: string): boolean;
   issueToken(meshToken: string, nodeId: string): HandshakeResponse;
   lookupSession(sessionToken: string): { nodeId: string; meshToken: string } | null;
   performHandshake(
     targetUrl: string,
     selfNodeId: string,
-    sharedSecret: string,
+    sharedSecret?: string,
   ): Promise<Result<HandshakeResponse>>;
 }
 
@@ -43,7 +43,9 @@ export function createHandshakeManager(): HandshakeManager {
 
   return {
     verifyIncoming(body, sharedSecret) {
-      if (!isTimestampValid(body.timestamp)) return false;
+      if (!sharedSecret) return true;
+      if (typeof body.timestamp !== "number" || !isTimestampValid(body.timestamp)) return false;
+      if (typeof body.hmac !== "string") return false;
       return verifyHmac(sharedSecret, body.nodeId, body.timestamp, body.hmac);
     },
 
@@ -65,9 +67,13 @@ export function createHandshakeManager(): HandshakeManager {
     },
 
     async performHandshake(targetUrl, selfNodeId, sharedSecret) {
-      const timestamp = Math.floor(Date.now() / 1000);
-      const hmac = generateHmac(sharedSecret, selfNodeId, timestamp);
-      const body: HandshakeBody = { nodeId: selfNodeId, timestamp, hmac };
+      let body: HandshakeBody;
+      if (sharedSecret) {
+        const timestamp = Math.floor(Date.now() / 1000);
+        body = { nodeId: selfNodeId, timestamp, hmac: generateHmac(sharedSecret, selfNodeId, timestamp) };
+      } else {
+        body = { nodeId: selfNodeId };
+      }
 
       try {
         const res = await fetch(`${targetUrl}mesh/hello`, {

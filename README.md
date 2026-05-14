@@ -72,13 +72,13 @@ openclaw plugins install clawhub:openclaw-mesh
 
 | 字段 | 说明 |
 |------|------|
-| `sharedSecret` | 组织内所有节点共用同一个密钥，建议通过环境变量注入 |
+| `sharedSecret` | **可选**。配置后启用 HMAC 签名验证（防御层叠加）；不配置则信任边界完全由 Tailscale ACL 保证 |
 | `meshToken` | **必填（握手模式）**。本机 gateway 的认证令牌，用于响应远端 peer 发来的消息。对应 `openclaw gateway call --token` 的值，建议用最小权限 token 并通过 `ref:env:` 注入，不要硬编码 |
 | `allowAgents` | 限制远端 peer 只能向指定 agentId 发消息。**不配置或为空时默认 `["main"]`。** 如需开放其他 agent，显式列出即可 |
 | `port` | 对方 gateway 端口，默认 `18789` |
 | `discovery.interval` | 节点发现刷新间隔 |
 | `discovery.probe` | 是否主动探测 `/health` 确认节点在线 |
-| `peers` | Phase 2 手动配置已知节点，Phase 3 自动握手后可省略 |
+| `peers` | 手动配置已知节点（可省略，自动握手会通过 discovery 发现节点）|
 
 ## 要求
 
@@ -94,6 +94,6 @@ openclaw plugins install clawhub:openclaw-mesh
 
 **关于 allowAgents**：`allowAgents` 控制远端 peer 可以向哪些 agentId 发消息。不配置或为空时默认允许 `["main"]`，开箱即用。如需限制或开放其他 agent，显式配置即可。
 
-**关于 peer 身份验证**：握手协议基于共享密钥（`sharedSecret`）+ HMAC 验证，peer 的 `nodeId` 由对方自我声明，本机不做额外校验。安全边界依赖 Tailscale 网络层访问控制——只有能到达本机 `/mesh/hello` 端点的节点才能发起握手。建议在 Tailscale ACL 中明确限制哪些节点可以访问本机的 gateway 端口。
+**关于信任边界**：openclaw-mesh 的主要信任边界是 **Tailscale ACL**。Tailscale 在加入 tailnet 时要求组织管理员审批（或 ACL 预授权），网络层已确保只有组织内经过授权的节点才能到达 `/mesh/hello` 端点。陌生节点无法加入 tailnet，也无法到达该端点。`sharedSecret` 是可选的应用层叠加验证，适合对防御深度有额外要求的场景；大多数部署下可以不配置。
 
 **使用前提**：仅在可信的私有 Tailscale tailnet 内使用，不要将 `/mesh/hello` 或 `/mesh/send` 端点暴露到公网。

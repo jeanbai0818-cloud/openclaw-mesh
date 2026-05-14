@@ -58,10 +58,6 @@ export function registerMeshHttpRoutes(
       const sharedSecret = meshConfig.sharedSecret;
       const meshToken = meshConfig.meshToken;
 
-      if (!sharedSecret) {
-        sendJson(res, 500, { error: "sharedSecret not configured" });
-        return;
-      }
       if (!meshToken) {
         sendJson(res, 500, { error: "meshToken not configured" });
         return;

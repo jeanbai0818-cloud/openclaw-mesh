@@ -7,9 +7,9 @@ import { startDiscovery } from "./src/discovery/index.js";
 import { registerMeshHttpRoutes } from "./src/http/index.js";
 import { registerMeshTools } from "./src/tools/index.js";
 
-// Required env vars (supplied via openclaw ref:env: config references):
-//   MESH_SECRET          — shared HMAC secret, same on every mesh node
-//   MESH_GATEWAY_TOKEN   — local gateway auth token for proxying mesh calls
+// Env vars (supplied via openclaw ref:env: config references):
+//   MESH_SECRET          — optional shared HMAC secret for defense-in-depth; Tailscale ACL is the primary trust boundary
+//   MESH_GATEWAY_TOKEN   — local gateway auth token for proxying mesh calls (required)
 const _ENV_MESH_SECRET: string | undefined = process.env["MESH_SECRET"];
 const _ENV_MESH_GATEWAY_TOKEN: string | undefined = process.env["MESH_GATEWAY_TOKEN"];
 void _ENV_MESH_SECRET;

@@ -26,8 +26,8 @@ export interface MeshConfig {
 
 export interface HandshakeBody {
   nodeId: string;
-  timestamp: number;
-  hmac: string;
+  timestamp?: number;
+  hmac?: string;
 }
 
 export interface HandshakeResponse {

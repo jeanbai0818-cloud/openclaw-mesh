@@ -8,7 +8,6 @@
   "prerequisites": {
     "binaries": ["tailscale", "openclaw"],
     "envVars": [
-      { "name": "MESH_SECRET", "description": "Shared HMAC secret; all mesh nodes must use the same value" },
       { "name": "MESH_GATEWAY_TOKEN", "description": "Local gateway auth token used for mesh proxy calls (least-privilege recommended)" }
     ]
   },

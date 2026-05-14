@@ -147,13 +147,13 @@ export function createRouter(
       if (isSessionValid(peer)) {
         const token = peer.sessionToken as string;
         const expiresAt = peer.sessionExpiresAt as number;
-        if (expiresAt < Date.now() + 120_000 && handshakeManager && meshConfig.sharedSecret) {
+        if (expiresAt < Date.now() + 120_000 && handshakeManager) {
           void renewSession(peer.hostname, peer.url, selfNodeId, meshConfig.sharedSecret, store, handshakeManager, logger);
         }
         return callMeshSend(peer.url, token, params, logger);
       }
 
-      if (handshakeManager && meshConfig.sharedSecret) {
+      if (handshakeManager) {
         const handshakeResult = await handshakeManager.performHandshake(
           peer.url,
           selfNodeId,
@@ -176,7 +176,7 @@ async function renewSession(
   hostname: string,
   url: string,
   selfNodeId: string,
-  sharedSecret: string,
+  sharedSecret: string | undefined,
   store: PeerStore,
   handshakeManager: HandshakeManager,
   logger: PluginLogger,
