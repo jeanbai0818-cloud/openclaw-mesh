@@ -6,10 +6,12 @@ import type { PeerStore } from "../store/index.js";
 
 const execFileAsync = promisify(execFile);
 
+const TAILSCALE_BIN = "tailscale";
+
 function resolveTailscaleBin(): string {
   return process.platform === "darwin"
     ? "/Applications/Tailscale.app/Contents/MacOS/Tailscale"
-    : "tailscale";
+    : TAILSCALE_BIN;
 }
 
 function parseIntervalMs(s: string): number {
