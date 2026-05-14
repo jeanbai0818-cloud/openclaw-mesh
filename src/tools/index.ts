@@ -1,4 +1,5 @@
 import type { OpenClawPluginApi } from "openclaw/plugin-sdk/plugin-entry";
+import type { MeshConfig } from "../types/index.js";
 import type { PeerStore } from "../store/index.js";
 import type { Router } from "../router/index.js";
 
@@ -26,6 +27,7 @@ export function registerMeshTools(
   api: OpenClawPluginApi,
   store: PeerStore,
   router: Router,
+  meshConfig: MeshConfig,
 ): void {
   api.registerTool({
     name: "mesh_peers",
@@ -33,7 +35,15 @@ export function registerMeshTools(
     description: "List currently known openclaw nodes in the Tailscale tailnet",
     parameters: { type: "object", properties: {} } as const,
     execute: async (_toolCallId, _params) => {
-      const peers = store.list().map(({ sessionToken: _st, sessionExpiresAt: _se, ...safe }) => safe);
+      const discovered = store.list().map(({ sessionToken: _st, sessionExpiresAt: _se, ...safe }) => safe);
+      const configuredKeys = Object.keys(meshConfig.peers ?? {});
+      const configuredPeers = configuredKeys
+        .filter((key) => !discovered.some((p) => p.hostname === key || p.ip === (meshConfig.peers?.[key]?.url ?? "")))
+        .map((key) => {
+          const cfg = meshConfig.peers![key]!;
+          return { hostname: key, url: cfg.url, online: true, configured: true };
+        });
+      const peers = [...configuredPeers, ...discovered];
       return {
         content: [{ type: "text" as const, text: JSON.stringify(peers, null, 2) }],
         details: { peers },

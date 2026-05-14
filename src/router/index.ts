@@ -51,8 +51,8 @@ async function callGateway(
     agentId: params.agentId,
     message: params.message,
     idempotencyKey: randomUUID(),
+    sessionKey: params.sessionKey ?? randomUUID(),
   };
-  if (params.sessionKey) callParams["sessionKey"] = params.sessionKey;
 
   const args = [
     "gateway", "call",
@@ -68,12 +68,14 @@ async function callGateway(
   try {
     const { stdout } = await execFileAsync("openclaw", args, {
       timeout: timeoutMs + 5_000,
+      env: { ...process.env, OPENCLAW_ALLOW_INSECURE_PRIVATE_WS: "1" },
     });
     return ok(extractReply(stdout));
   } catch (e) {
     const exitCode = (e as { code?: number }).code;
-    logger.warn(`[mesh] gateway call to ${url} failed (exit ${exitCode ?? "unknown"})`);
-    return err(`gateway call failed (exit ${exitCode ?? "unknown"})`);
+    const stderr = (e as { stderr?: string }).stderr ?? "";
+    logger.warn(`[mesh] gateway call to ${url} failed (exit ${exitCode ?? "unknown"}): ${stderr.slice(0, 200)}`);
+    return err(`gateway call failed (exit ${exitCode ?? "unknown"}): ${stderr.slice(0, 200)}`);
   }
 }
 

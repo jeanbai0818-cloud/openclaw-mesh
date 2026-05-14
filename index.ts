@@ -30,6 +30,6 @@ export default definePluginEntry({
     const router = createRouter(store, meshConfig, api.logger, handshakeManager);
     startDiscovery(store, api.logger, meshConfig);
     registerMeshHttpRoutes(api, handshakeManager, meshConfig);
-    registerMeshTools(api, store, router);
+    registerMeshTools(api, store, router, meshConfig);
   },
 });

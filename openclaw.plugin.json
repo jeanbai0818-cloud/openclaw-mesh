@@ -2,14 +2,11 @@
   "id": "openclaw-mesh",
   "name": "OpenClaw Mesh",
   "description": "Tailscale tailnet 内多 gateway 互联，agent 跨节点发消息",
+  "activation": {
+    "onStartup": true
+  },
   "contracts": {
     "tools": ["mesh_peers", "mesh_send"]
-  },
-  "prerequisites": {
-    "binaries": ["tailscale", "openclaw"],
-    "envVars": [
-      { "name": "MESH_GATEWAY_TOKEN", "description": "Local gateway auth token used for mesh proxy calls (least-privilege recommended)" }
-    ]
   },
   "configSchema": {
     "type": "object",
