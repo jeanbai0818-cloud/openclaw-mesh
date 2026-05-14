@@ -118,7 +118,8 @@ export function registerMeshHttpRoutes(
 
       const port = meshConfig.port ?? 18789;
       const localUrl = `http://localhost:${port}/`;
-      const timeoutMs = body.timeoutMs ?? 30_000;
+      const MAX_TIMEOUT_MS = 120_000;
+      const timeoutMs = Math.min(body.timeoutMs ?? 30_000, MAX_TIMEOUT_MS);
       const callParams: Record<string, unknown> = {
         agentId: body.agentId,
         message: body.message,
