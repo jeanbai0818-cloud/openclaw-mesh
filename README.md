@@ -74,7 +74,7 @@ openclaw plugins install clawhub:openclaw-mesh
 |------|------|
 | `sharedSecret` | 组织内所有节点共用同一个密钥，建议通过环境变量注入 |
 | `meshToken` | **必填（握手模式）**。本机 gateway 的认证令牌，用于响应远端 peer 发来的消息。对应 `openclaw gateway call --token` 的值，建议用最小权限 token 并通过 `ref:env:` 注入，不要硬编码 |
-| `allowAgents` | **必填**。限制远端 peer 只能向指定 agentId 发消息。**不配置或为空则拒绝所有入站消息（默认拒绝）。** 推荐至少填 `["main"]` |
+| `allowAgents` | 限制远端 peer 只能向指定 agentId 发消息。**不配置或为空时默认 `["main"]`。** 如需开放其他 agent，显式列出即可 |
 | `port` | 对方 gateway 端口，默认 `18789` |
 | `discovery.interval` | 节点发现刷新间隔 |
 | `discovery.probe` | 是否主动探测 `/health` 确认节点在线 |
@@ -92,7 +92,7 @@ openclaw plugins install clawhub:openclaw-mesh
 
 **关于 token 范围**：握手协议（`/mesh/hello`）返回的是随机 session token，不是 gateway 主令牌。session token 在服务端跟踪，有效期 1 小时，期间可重复使用；到期后自动失效。对方节点凭此 token 调用本节点的 `/mesh/send` 代理端点，gateway 主令牌始终不离开本机。
 
-**关于 allowAgents**：`allowAgents` 为必填项，默认行为是**拒绝所有**入站消息。不配置或配置为空数组时，所有来自远端 peer 的消息均返回 403。必须显式列出允许访问的 agentId（例如 `["main"]`）才能正常收发消息。
+**关于 allowAgents**：`allowAgents` 控制远端 peer 可以向哪些 agentId 发消息。不配置或为空时默认允许 `["main"]`，开箱即用。如需限制或开放其他 agent，显式配置即可。
 
 **关于 peer 身份验证**：握手协议基于共享密钥（`sharedSecret`）+ HMAC 验证，peer 的 `nodeId` 由对方自我声明，本机不做额外校验。安全边界依赖 Tailscale 网络层访问控制——只有能到达本机 `/mesh/hello` 端点的节点才能发起握手。建议在 Tailscale ACL 中明确限制哪些节点可以访问本机的 gateway 端口。
 

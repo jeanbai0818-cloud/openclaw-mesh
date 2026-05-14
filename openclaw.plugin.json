@@ -22,7 +22,7 @@
       "allowAgents": {
         "type": "array",
         "items": { "type": "string" },
-        "description": "Required. Agent IDs that remote peers are allowed to message. Empty or missing = deny all."
+        "description": "Agent IDs that remote peers are allowed to message. Defaults to [\"main\"] if not set."
       },
       "discovery": {
         "type": "object",
